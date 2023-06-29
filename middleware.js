@@ -3,10 +3,17 @@ import { parse } from 'cookie';
 
 export async function middleware(request) {
   const { headers, url } = request;
-
-  const cookieHeader = headers.get('cookie');
+  if (
+    url === '/login' ||
+    url.endsWith('/api/login') ||
+    url.endsWith('/api/verify-session-token') ||
+    url.endsWith('/api/keep-login')
+  ) {
+    return NextResponse.next();
+  }
+  const cookieHeader = headers.get('Cookie');
   if(!cookieHeader){
-    const error = new Error("Not authenticated")
+    const error = new Error("Not authenticated, no cookies present")
     error.status=401
     throw error
   }
@@ -21,14 +28,6 @@ export async function middleware(request) {
   }
   //console.log("cookie: ",token)
 
-  if (
-    request.url === '/login' ||
-    request.url.endsWith('/api/login') ||
-    request.url.endsWith('/api/verify-session-token') ||
-    request.url.endsWith('/api/keep-login')
-  ) {
-    return NextResponse.next();
-  }
 
   if (token) {
     const response = await fetch(new URL('/api/verify-session-token', request.url) , {

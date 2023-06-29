@@ -5,7 +5,7 @@
  */
 import { it } from "mocha"
 import chai from 'chai'
-import { middleware} from '../auth/middleware.js'
+import { middleware} from '../middleware.js'
 import verifyToken from "../auth/verifyToken.js";
 import chaiAsPromised from 'chai-as-promised';
 import jwt from 'jsonwebtoken';
@@ -44,30 +44,27 @@ describe("verifyToken",function (){
 
 describe('middleware',()=>{
     it('should throw an error if no cookie is present', async ()=>{
+        let headers = new Headers();
         const req = {
-            headers:{
-                get: function(){
-                return null
-            }
+            headers:headers,
+            url:ROOT_URL
         }
-        }
-        await expect(middleware(req)).to.be.rejectedWith("Not authenticated")
+        await expect(middleware(req)).to.be.rejectedWith("Not authenticated, no cookies present")
     })
     it("should throw an error if the token isn't present",async ()=>{
+        let headers = new Headers();
+        headers.set('Cookie', 'token=; HttpOnly');
         const req = {
-            headers:{
-                get: function(){
-                return {token:""}
-            }
+            headers: headers,
+            url:ROOT_URL
         }
-        }
-        await expect(middleware(req)).to.be.rejectedWith("Auth cookie not present")
+        await expect(middleware(req)).to.be.rejectedWith("Token not present in Cookie")
     })
     it("should throw an error if the token isn't correct",async ()=>{
+        let headers = new Headers();
+        headers.set('Cookie', 'token='+INCORRECT_TOKEN+'; HttpOnly');
         const req = {
-            headers: new Headers({
-                cookie: 'token='+INCORRECT_TOKEN
-            }),
+            headers: headers,
             url: ROOT_URL,
           };
         await expect(middleware(req)).to.be.rejectedWith("Invalid token")
