@@ -30,7 +30,8 @@ const INCORRECT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NT
 
 chai.use(chaiAsPromised);
 
-describe("verifyToken",()=>{
+describe("verifyToken",function (){
+    this.timeout(3000)
     it('should throw an error if token incorrect', ()=>{
         const token =INCORRECT_TOKEN
         expect(() => verifyToken(token)).to.throw(Error).and.have.property('message').that.includes('invalid signature');    

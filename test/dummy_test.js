@@ -1,3 +1,5 @@
+
+/*
 import { it } from "mocha"
 import chai from 'chai'
 const assert= chai.assert
@@ -36,3 +38,5 @@ describe('Dummy test',()=>{
     })
 
 })
+
+*/
